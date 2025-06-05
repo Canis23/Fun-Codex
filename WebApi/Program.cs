@@ -1,3 +1,4 @@
+using WebApi.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +7,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<WebApi.Services.IHelloService, WebApi.Services.HelloService>();
 builder.Services.AddScoped<WebApi.Services.IWeatherForecastService, WebApi.Services.WeatherForecastService>();
+
+// required for JWT configuration in middleware
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 var app = builder.Build();
 
@@ -17,6 +21,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// custom middleware to validate JWT tokens
+app.UseJwtValidation();
 
 app.MapControllers();
 
